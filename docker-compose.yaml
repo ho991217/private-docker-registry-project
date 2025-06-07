@@ -21,3 +21,6 @@ services:
       - ./private-registry/auth:/usr/src/app/auth:rw
     depends_on:
       - registry
+    environment:
+      - REGISTRY_API=http://registry:5000/v2
+      - AUDIT_FILE=./data/audit.log

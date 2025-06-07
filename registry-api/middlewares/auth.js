@@ -20,6 +20,8 @@ function checkAuth(req, res, next) {
   }
   
   req.user = user.name;
+  req.authHeader = req.headers.authorization;
+    
   next();
 }
 

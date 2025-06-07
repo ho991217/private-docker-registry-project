@@ -4,11 +4,13 @@ import fs from 'node:fs';
 import bcrypt from 'bcryptjs';
 import { parseHtpasswd } from '../utils/htpasswd.js';
 import { HTPASSWD_PATH } from '../lib/constants.js';
+import { addAudit } from './audit.js';
 
 const router = express.Router();
 
 router.get('/', checkAuth, (req, res) => {
   const users = Object.keys(parseHtpasswd(HTPASSWD_PATH));
+  addAudit({ user: req.user, action: 'list_users' });
   res.json({ users });
 });
 
@@ -30,8 +32,10 @@ router.post('/', checkAuth, async (req, res) => {
       if (fileText.length > 0) fileText += '\n';
       fileText += `${username}:${hash}\n`;
       fs.writeFileSync(HTPASSWD_PATH, fileText, 'utf-8');
+      addAudit({ user: req.user, action: 'add_user', username });
       res.json({ success: true });
   } catch (err) {
+      addAudit({ user: req.user, action: 'add_user', username, error: err.message });
       res.status(500).json({ error: 'failed to add user', details: err.message });
   }
 });
@@ -48,7 +52,8 @@ router.delete('/:username', checkAuth, (req, res) => {
 
   const newText = lines.filter(l => l.trim() !== '').join('\n') + '\n';
   fs.writeFileSync(HTPASSWD_PATH, newText, 'utf-8');
+  addAudit({ user: req.user, action: 'delete_user', username: delUser });
   res.json({ success: true });
 });
 
-export { router };
+export default router;

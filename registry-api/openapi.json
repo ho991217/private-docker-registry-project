@@ -1,0 +1,156 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Private Docker Registry API",
+    "description": "사설 도커 레지스트리 및 이미지/유저/로그 관리 API",
+    "version": "0.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Local" }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "사용자 목록 조회",
+        "security": [{ "basicAuth": [] }],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      },
+      "post": {
+        "summary": "사용자 추가",
+        "security": [{ "basicAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/users/{username}": {
+      "delete": {
+        "summary": "사용자 삭제",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/images": {
+      "get": {
+        "summary": "이미지 목록 조회",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/images/{image}": {
+      "delete": {
+        "summary": "이미지 삭제",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          {
+            "name": "image",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/images/{image}/tags": {
+      "get": {
+        "summary": "이미지 태그 목록",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          {
+            "name": "image",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/images/{image}/tags/{tag}": {
+      "delete": {
+        "summary": "특정 태그 삭제",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          { "name": "image", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "tag", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    },
+    "/audit": {
+      "get": {
+        "summary": "활동로그 조회",
+        "security": [{ "basicAuth": [] }],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "image",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "성공" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}
